@@ -1,98 +1,153 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Pixel 4 Sale</title>
+    <title>Pixel 4 Sale</title>
 
-  <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <header class="hero">
-    <div class="container">
-      <div class="badge">PIXEL 4 SALE</div>
+<header class="hero">
 
-      <h1>امتلك مساحتك على لوحة الإعلانات</h1>
+    <div class="badge">PIXEL 4 SALE</div>
 
-      <p>
-        اختر مكانك، اكتب إعلانك، وخلّي مساحتك موجودة على اللوحة.
-      </p>
+    <h1>امتلك مساحتك على لوحة الإعلانات</h1>
 
-      <div class="price-box">
-        <strong>50 جنيه</strong>
-        <span>سعر البكسل الواحد</span>
-      </div>
+    <p>
+        اختار البيكسلات اللي عايزها، حدد مساحتك،
+        وحط إعلانك قدام كل زوار الموقع.
+    </p>
+
+    <div class="price-box">
+        <strong>10 جنيه</strong>
+        <span>سعر البيكسل الواحد</span>
     </div>
-  </header>
+
+</header>
 
 
-  <main class="container">
+<section class="stats">
 
-    <section class="stats">
+    <div class="stat">
+        <strong>10,000</strong>
+        <span>إجمالي البيكسلات</span>
+    </div>
 
-      <div class="stat">
-        <strong id="totalPixels">10,000</strong>
-        <span>إجمالي البكسلات</span>
-      </div>
+    <div class="stat">
+        <strong id="selectedCount">0</strong>
+        <span>البيكسلات المختارة</span>
+    </div>
 
-      <div class="stat">
-        <strong id="selectedPixels">0</strong>
-        <span>البكسلات المحددة</span>
-      </div>
-
-      <div class="stat">
+    <div class="stat">
         <strong id="totalPrice">0 جنيه</strong>
-        <span>السعر الإجمالي</span>
-      </div>
-
-    </section>
-
-
-    <section class="board-section">
-
-      <h2>اختر مساحتك</h2>
-
-      <p class="hint">
-        اضغط على المربعات التي تريد شراءها.
-      </p>
-
-      <div class="board-wrapper">
-        <div id="pixelBoard" class="pixel-board"></div>
-      </div>
-
-    </section>
-
-
-    <section class="checkout">
-
-      <div>
-        <span>المحدد</span>
-        <strong id="checkoutPixels">0 بكسل</strong>
-      </div>
-
-      <div>
         <span>الإجمالي</span>
-        <strong id="checkoutPrice">0 جنيه</strong>
-      </div>
+    </div>
 
-      <button id="reserveButton">
-        احجز المساحة
-      </button>
-
-    </section>
-
-  </main>
+</section>
 
 
-  <footer>
-    <p>© 2026 Pixel 4 Sale</p>
-  </footer>
+<section class="board-section">
+
+    <h2>لوحة الإعلانات</h2>
+
+    <p class="board-help">
+        اضغط على البيكسلات لاختيار المساحة التي تريد شراءها.
+    </p>
+
+    <div class="zoom-container">
+
+        <div id="pixelBoard" class="pixel-board"></div>
+
+        <div id="zoomPreview" class="zoom-preview">
+            <div id="zoomGrid"></div>
+        </div>
+
+    </div>
+
+</section>
 
 
-  <script src="app.js"></script>
+<section class="checkout">
+
+    <h2>مساحتك الإعلانية</h2>
+
+    <div class="checkout-info">
+
+        <div>
+            <span>البيكسلات المختارة</span>
+            <strong id="checkoutCount">0</strong>
+        </div>
+
+        <div>
+            <span>السعر الإجمالي</span>
+            <strong id="checkoutPrice">0 جنيه</strong>
+        </div>
+
+    </div>
+
+    <button id="reserveButton">
+        احجز مساحتك الآن
+    </button>
+
+</section>
+
+
+<section class="support">
+
+    <h2>محتاج مساعدة؟</h2>
+
+    <p>
+        لو عندك أي مشكلة أو استفسار، تقدر تتواصل مع الدعم.
+    </p>
+
+    <button id="supportButton">
+        تواصل مع الدعم
+    </button>
+
+</section>
+
+
+<div id="supportModal" class="modal">
+
+    <div class="modal-box">
+
+        <button class="close-modal" id="closeSupport">
+            ×
+        </button>
+
+        <h2>الدعم</h2>
+
+        <input
+            type="text"
+            id="supportName"
+            placeholder="اسمك"
+        >
+
+        <input
+            type="tel"
+            id="supportPhone"
+            placeholder="رقم الموبايل"
+        >
+
+        <textarea
+            id="supportMessage"
+            placeholder="اكتب رسالتك..."
+        ></textarea>
+
+        <button id="sendSupport">
+            إرسال الرسالة
+        </button>
+
+    </div>
+
+</div>
+
+
+<script src="app.js"></script>
 
 </body>
 </html>
