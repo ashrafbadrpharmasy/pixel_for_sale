@@ -1,208 +1,212 @@
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background: #f4fff7;
-    color: #173b27;
-    line-height: 1.6;
+  font-family: Arial, sans-serif;
+  background: #f4f7fb;
+  color: #172033;
 }
 
-.header {
-    background: #16834b;
-    color: white;
-    text-align: center;
-    padding: 35px 20px;
+.container {
+  width: min(1100px, 92%);
+  margin: auto;
 }
 
-.header h1 {
-    margin-bottom: 6px;
+.hero {
+  background: #101828;
+  color: white;
+  text-align: center;
+  padding: 70px 20px 60px;
 }
 
-.products {
-    width: 92%;
-    max-width: 1200px;
-    margin: 35px auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 20px;
+.badge {
+  display: inline-block;
+  background: #ffffff;
+  color: #101828;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 
-.product,
-.box {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 6px 20px rgba(0,0,0,.07);
+.hero h1 {
+  font-size: clamp(30px, 5vw, 55px);
+  margin-bottom: 18px;
 }
 
-.product {
-    padding: 20px;
-    text-align: center;
+.hero p {
+  color: #cbd5e1;
+  font-size: 18px;
+  margin-bottom: 30px;
 }
 
-.product-image {
-    height: 180px;
-    border-radius: 12px;
-    background: #dff5e7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #16834b;
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 15px;
+.price-box {
+  display: inline-flex;
+  flex-direction: column;
+  background: #ffffff;
+  color: #101828;
+  padding: 18px 30px;
+  border-radius: 15px;
 }
 
-.product p {
-    color: #666;
-    margin: 8px 0 14px;
+.price-box strong {
+  font-size: 30px;
 }
 
-.product strong {
-    display: block;
-    color: #16834b;
-    font-size: 22px;
-    margin-bottom: 15px;
+.price-box span {
+  color: #667085;
+  margin-top: 5px;
 }
 
-button {
-    border: 0;
-    background: #16834b;
-    color: white;
-    padding: 12px 18px;
-    border-radius: 9px;
-    font-size: 15px;
-    cursor: pointer;
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin: 35px 0;
 }
 
-button:disabled {
-    opacity: .6;
-    cursor: not-allowed;
+.stat {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
 }
 
-button.dark {
-    background: #333;
+.stat strong {
+  display: block;
+  font-size: 25px;
+  margin-bottom: 8px;
 }
 
-.box {
-    width: 92%;
-    max-width: 650px;
-    margin: 35px auto;
-    padding: 25px;
+.stat span {
+  color: #667085;
 }
 
-.hidden {
-    display: none !important;
+.board-section {
+  background: white;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
 }
 
-.selected {
-    background: #eefaf2;
-    color: #16834b;
-    padding: 12px;
-    border-radius: 9px;
-    margin: 15px 0;
-    font-weight: bold;
+.board-section h2 {
+  font-size: 28px;
+  margin-bottom: 8px;
 }
 
-input,
-textarea {
+.hint {
+  color: #667085;
+  margin-bottom: 20px;
+}
+
+.board-wrapper {
+  width: 100%;
+  overflow: auto;
+  border: 1px solid #d0d5dd;
+  border-radius: 12px;
+  padding: 10px;
+  background: #eef2f6;
+}
+
+.pixel-board {
+  display: grid;
+  grid-template-columns: repeat(100, 10px);
+  grid-template-rows: repeat(100, 10px);
+  width: 1000px;
+  height: 1000px;
+  gap: 1px;
+  background: #cbd5e1;
+}
+
+.pixel {
+  width: 10px;
+  height: 10px;
+  background: white;
+  cursor: pointer;
+}
+
+.pixel:hover {
+  background: #94a3b8;
+}
+
+.pixel.selected {
+  background: #2563eb;
+}
+
+.pixel.sold {
+  background: #111827;
+  cursor: not-allowed;
+}
+
+.checkout {
+  position: sticky;
+  bottom: 15px;
+  margin: 25px 0;
+  padding: 20px;
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.checkout div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.checkout span {
+  color: #667085;
+  font-size: 14px;
+}
+
+.checkout strong {
+  font-size: 20px;
+}
+
+#reserveButton {
+  border: none;
+  background: #2563eb;
+  color: white;
+  padding: 15px 28px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#reserveButton:hover {
+  background: #1d4ed8;
+}
+
+footer {
+  text-align: center;
+  padding: 35px;
+  color: #667085;
+}
+
+@media (max-width: 700px) {
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #reserveButton {
     width: 100%;
-    padding: 13px;
-    margin: 7px 0;
-    border: 1px solid #ccc;
-    border-radius: 9px;
-    font-size: 16px;
-}
+  }
 
-textarea {
-    height: 110px;
-    resize: vertical;
-}
-
-#sendOrderButton {
-    width: 100%;
-    margin-top: 10px;
-}
-
-.success {
-    margin-top: 20px;
-    padding: 20px;
-    text-align: center;
-    background: #ecfff2;
-    border: 1px solid #b9ebc8;
-    border-radius: 12px;
-}
-
-.success strong {
-    display: block;
-    color: #16834b;
-    font-size: 24px;
-    margin: 8px 0 15px;
-}
-
-.track-form {
-    display: flex;
-    gap: 8px;
-    margin-top: 18px;
-}
-
-.track-form input {
-    margin: 0;
-}
-
-#trackingMessage {
-    margin-top: 15px;
-    color: #a00000;
-}
-
-.tracking-card {
-    margin-top: 18px;
-    background: #f8fffa;
-    padding: 18px;
-    border-radius: 12px;
-}
-
-.tracking-card h3 {
-    color: #16834b;
-    margin-bottom: 10px;
-}
-
-.step {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    padding: 8px 0;
-}
-
-.step i {
-    width: 27px;
-    height: 27px;
-    border-radius: 50%;
-    background: #ddd;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-style: normal;
-}
-
-.step.active i {
-    background: #16834b;
-    color: white;
-}
-
-.step.active strong {
-    color: #16834b;
-}
-
-@media (max-width: 600px) {
-    .track-form {
-        flex-direction: column;
-    }
-
-    .track-form button {
-        width: 100%;
-    }
 }
