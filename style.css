@@ -1,0 +1,208 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4fff7;
+    color: #173b27;
+    line-height: 1.6;
+}
+
+.header {
+    background: #16834b;
+    color: white;
+    text-align: center;
+    padding: 35px 20px;
+}
+
+.header h1 {
+    margin-bottom: 6px;
+}
+
+.products {
+    width: 92%;
+    max-width: 1200px;
+    margin: 35px auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px;
+}
+
+.product,
+.box {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.07);
+}
+
+.product {
+    padding: 20px;
+    text-align: center;
+}
+
+.product-image {
+    height: 180px;
+    border-radius: 12px;
+    background: #dff5e7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #16834b;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.product p {
+    color: #666;
+    margin: 8px 0 14px;
+}
+
+.product strong {
+    display: block;
+    color: #16834b;
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+button {
+    border: 0;
+    background: #16834b;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 9px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+button.dark {
+    background: #333;
+}
+
+.box {
+    width: 92%;
+    max-width: 650px;
+    margin: 35px auto;
+    padding: 25px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.selected {
+    background: #eefaf2;
+    color: #16834b;
+    padding: 12px;
+    border-radius: 9px;
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 13px;
+    margin: 7px 0;
+    border: 1px solid #ccc;
+    border-radius: 9px;
+    font-size: 16px;
+}
+
+textarea {
+    height: 110px;
+    resize: vertical;
+}
+
+#sendOrderButton {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.success {
+    margin-top: 20px;
+    padding: 20px;
+    text-align: center;
+    background: #ecfff2;
+    border: 1px solid #b9ebc8;
+    border-radius: 12px;
+}
+
+.success strong {
+    display: block;
+    color: #16834b;
+    font-size: 24px;
+    margin: 8px 0 15px;
+}
+
+.track-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.track-form input {
+    margin: 0;
+}
+
+#trackingMessage {
+    margin-top: 15px;
+    color: #a00000;
+}
+
+.tracking-card {
+    margin-top: 18px;
+    background: #f8fffa;
+    padding: 18px;
+    border-radius: 12px;
+}
+
+.tracking-card h3 {
+    color: #16834b;
+    margin-bottom: 10px;
+}
+
+.step {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.step i {
+    width: 27px;
+    height: 27px;
+    border-radius: 50%;
+    background: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-style: normal;
+}
+
+.step.active i {
+    background: #16834b;
+    color: white;
+}
+
+.step.active strong {
+    color: #16834b;
+}
+
+@media (max-width: 600px) {
+    .track-form {
+        flex-direction: column;
+    }
+
+    .track-form button {
+        width: 100%;
+    }
+}

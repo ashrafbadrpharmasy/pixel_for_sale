@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>لوحة الموظف</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4fff7;
+    color: #173b27;
+}
+
+header {
+    background: #16834b;
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+button {
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.logout {
+    background: white;
+    color: #16834b;
+}
+
+.container {
+    width: 95%;
+    max-width: 1400px;
+    margin: 25px auto;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,.06);
+}
+
+.stat strong {
+    display: block;
+    color: #16834b;
+    font-size: 26px;
+    margin-top: 5px;
+}
+
+.toolbar {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.toolbar input,
+.toolbar select {
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.orders {
+    display: grid;
+    gap: 18px;
+}
+
+.order {
+    background: white;
+    padding: 18px;
+    border-radius: 14px;
+    box-shadow: 0 5px 18px rgba(0,0,0,.06);
+}
+
+.order-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.number {
+    color: #16834b;
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(210px,1fr));
+    gap: 8px;
+}
+
+.info div {
+    background: #f7fbf8;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.status {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.status select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.save {
+    background: #16834b;
+    color: white;
+}
+
+.whatsapp {
+    background: #25D366;
+    color: white;
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+}
+
+.proof {
+    display: inline-block;
+    margin-top: 10px;
+    background: #333;
+    color: white;
+    text-decoration: none;
+    padding: 9px 12px;
+    border-radius: 8px;
+}
+
+.completed-section {
+    margin-top: 150px;
+    padding-top: 25px;
+    border-top: 2px dashed #ccdccc;
+}
+
+.completed-title {
+    color: #777;
+    margin-bottom: 15px;
+}
+
+.order.completed {
+    padding: 10px 14px;
+    opacity: .65;
+}
+
+.order.completed .info,
+.order.completed .proof {
+    display: none;
+}
+
+.order.completed .number {
+    font-size: 15px;
+}
+
+.empty {
+    background: white;
+    padding: 35px;
+    text-align: center;
+    border-radius: 12px;
+}
+
+@media(max-width:600px) {
+    .toolbar {
+        flex-direction: column;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h2>لوحة الموظف</h2>
+
+<button class="logout" onclick="logout()">
+تسجيل الخروج
+</button>
+
+</header>
+
+<main class="container">
+
+<section class="stats">
+
+<div class="stat">
+كل الطلبات
+<strong id="total">0</strong>
+</div>
+
+<div class="stat">
+قيد المراجعة
+<strong id="pending">0</strong>
+</div>
+
+<div class="stat">
+تم التأكيد
+<strong id="confirmed">0</strong>
+</div>
+
+<div class="stat">
+جاري التجهيز
+<strong id="preparing">0</strong>
+</div>
+
+<div class="stat">
+تم الشحن
+<strong id="shipped">0</strong>
+</div>
+
+<div class="stat">
+تم التسليم
+<strong id="delivered">0</strong>
+</div>
+
+</section>
+
+<section class="toolbar">
+
+<input
+id="search"
+placeholder="بحث برقم الطلب أو الاسم أو الهاتف"
+oninput="render()">
+
+<select id="filter" onchange="render()">
+
+<option value="all">كل الحالات</option>
+<option value="pending">قيد المراجعة</option>
+<option value="confirmed">تم التأكيد</option>
+<option value="preparing">جاري التجهيز</option>
+<option value="shipped">تم الشحن</option>
+<option value="delivered">تم التسليم</option>
+
+</select>
+
+<button class="save" onclick="loadOrders()">
+تحديث
+</button>
+
+</section>
+
+<section id="orders" class="orders"></section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+"https://uklivylyenatdqbgmcxy.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_ntlKWYQvMXlCs_obIEVIIA_-CfxOFTJ";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+let orders = [];
+
+
+async function checkLogin() {
+
+    const { data } =
+        await supabaseClient.auth.getSession();
+
+    if (!data.session) {
+        location.href = "/admin/login.html";
+        return false;
+    }
+
+    return true;
+}
+
+
+async function loadOrders() {
+
+    if (!await checkLogin()) return;
+
+    const { data, error } =
+        await supabaseClient
+            .from("orders")
+            .select("*")
+            .order("created_at", {
+                ascending: false
+            });
+
+    if (error) {
+        console.error(error);
+        document.getElementById("orders").innerHTML =
+            `<div class="empty">${error.message}</div>`;
+        return;
+    }
+
+    orders = data || [];
+
+    updateStats();
+    render();
+}
+
+
+function updateStats() {
+
+    document.getElementById("total").textContent =
+        orders.length;
+
+    ["pending","confirmed","preparing","shipped","delivered"]
+        .forEach(status => {
+
+            document.getElementById(status).textContent =
+                orders.filter(o => o.status === status).length;
+
+        });
+}
+
+
+async function render() {
+
+    const search =
+        document.getElementById("search")
+            .value.trim().toLowerCase();
+
+    const filter =
+        document.getElementById("filter").value;
+
+
+    let list =
+        orders.filter(o => {
+
+            const searchOK =
+                !search ||
+                o.order_number.toLowerCase().includes(search) ||
+                o.customer_name.toLowerCase().includes(search) ||
+                o.customer_phone.includes(search);
+
+            const filterOK =
+                filter === "all" ||
+                o.status === filter;
+
+            return searchOK && filterOK;
+        });
+
+
+    list.sort((a,b) => {
+
+        if (a.status === "delivered" &&
+            b.status !== "delivered") return 1;
+
+        if (a.status !== "delivered" &&
+            b.status === "delivered") return -1;
+
+        return new Date(b.created_at) -
+               new Date(a.created_at);
+    });
+
+
+    const container =
+        document.getElementById("orders");
+
+    container.innerHTML = "";
+
+
+    if (!list.length) {
+
+        container.innerHTML =
+            `<div class="empty">لا توجد طلبات.</div>`;
+
+        return;
+    }
+
+
+    let activeAdded = false;
+    let completedSection = null;
+
+
+    for (const order of list) {
+
+        const completed =
+            order.status === "delivered";
+
+
+        if (completed && !completedSection) {
+
+            completedSection =
+                document.createElement("section");
+
+            completedSection.className =
+                "completed-section";
+
+            completedSection.innerHTML =
+                `<h2 class="completed-title">
+                    الطلبات التي تم تسليمها
+                </h2>`;
+
+            container.appendChild(completedSection);
+        }
+
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            completed
+                ? "order completed"
+                : "order";
+
+
+        const phone =
+            order.customer_phone
+                .replace(/\D/g,"")
+                .replace(/^0/,"20");
+
+
+        let proof = "";
+
+
+        if (order.payment_proof_url && !completed) {
+
+            const { data } =
+                await supabaseClient.storage
+                    .from("payment-proofs")
+                    .createSignedUrl(
+                        order.payment_proof_url,
+                        3600
+                    );
+
+            if (data?.signedUrl) {
+
+                proof =
+                    `<a class="proof"
+                       href="${data.signedUrl}"
+                       target="_blank">
+                       فتح إثبات الدفع
+                    </a>`;
+            }
+        }
+
+
+        card.innerHTML = `
+
+            <div class="order-head">
+
+                <div class="number">
+                    ${order.order_number}
+                </div>
+
+                <small>
+                    ${new Date(order.created_at)
+                        .toLocaleString("ar-EG")}
+                </small>
+
+            </div>
+
+            ${
+                completed
+                ? `
+                    <div class="status">
+                        <strong>
+                            تم التسليم ✅
+                        </strong>
+
+                        <a
+                            class="whatsapp"
+                            target="_blank"
+                            href="https://wa.me/${phone}">
+                            مراسلة العميل
+                        </a>
+                    </div>
+                `
+                : `
+                    <div class="info">
+
+                        <div>
+                            <strong>المنتج</strong>
+                            ${order.product_name}
+                        </div>
+
+                        <div>
+                            <strong>السعر</strong>
+                            ${order.product_price} جنيه
+                        </div>
+
+                        <div>
+                            <strong>العميل</strong>
+                            ${order.customer_name}
+                        </div>
+
+                        <div>
+                            <strong>الهاتف</strong>
+                            ${order.customer_phone}
+                        </div>
+
+                        <div>
+                            <strong>العنوان</strong>
+                            ${order.customer_address}
+                        </div>
+
+                        <div>
+                            <strong>الحالة</strong>
+                            ${label(order.status)}
+                        </div>
+
+                    </div>
+
+                    ${proof}
+
+                    <div class="status">
+
+                        <select id="s-${order.id}">
+
+                            ${options(order.status)}
+
+                        </select>
+
+                        <button
+                            class="save"
+                            onclick="updateStatus(${order.id})">
+                            حفظ الحالة
+                        </button>
+
+                        <a
+                            class="whatsapp"
+                            target="_blank"
+                            href="https://wa.me/${phone}">
+                            مراسلة العميل
+                        </a>
+
+                    </div>
+                `
+            }
+        `;
+
+
+        if (completed) {
+            completedSection.appendChild(card);
+        } else {
+            container.appendChild(card);
+            activeAdded = true;
+        }
+    }
+}
+
+
+function options(current) {
+
+    const list = [
+        ["pending","قيد المراجعة"],
+        ["confirmed","تم التأكيد"],
+        ["preparing","جاري التجهيز"],
+        ["shipped","تم الشحن"],
+        ["delivered","تم التسليم"]
+    ];
+
+    return list.map(x =>
+        `<option value="${x[0]}"
+        ${x[0] === current ? "selected" : ""}>
+        ${x[1]}
+        </option>`
+    ).join("");
+}
+
+
+function label(status) {
+
+    const labels = {
+        pending: "قيد المراجعة",
+        confirmed: "تم التأكيد",
+        preparing: "جاري التجهيز",
+        shipped: "تم الشحن",
+        delivered: "تم التسليم"
+    };
+
+    return labels[status] || status;
+}
+
+
+async function updateStatus(id) {
+
+    const status =
+        document.getElementById(`s-${id}`).value;
+
+
+    const { error } =
+        await supabaseClient
+            .from("orders")
+            .update({ status })
+            .eq("id", id);
+
+
+    if (error) {
+
+        alert(error.message);
+        return;
+    }
+
+
+    await loadOrders();
+
+    alert("تم تحديث الحالة ✅");
+}
+
+
+async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    location.href =
+        "/admin/login.html";
+}
+
+
+loadOrders();
+
+setInterval(
+    loadOrders,
+    15000
+);
+
+</script>
+
+</body>
+</html>
