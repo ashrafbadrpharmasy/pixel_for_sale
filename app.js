@@ -1,316 +1,112 @@
-const SUPABASE_URL =
-    "https://uklivylyenatdqbgmcxy.supabase.co";
+const PIXEL_PRICE = 50;
 
-const SUPABASE_KEY =
-    "sb_publishable_ntlKWYQvMXlCs_obIEVIIA_-CfxOFTJ";
+const BOARD_SIZE = 100;
 
-const WHATSAPP_NUMBER =
-    "201070845123";
+const TOTAL_PIXELS = BOARD_SIZE * BOARD_SIZE;
 
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY,
-        {
-            auth: {
-                persistSession: false,
-                autoRefreshToken: false,
-                detectSessionInUrl: false
-            }
-        }
-    );
+const pixelBoard = document.getElementById("pixelBoard");
 
-let selectedProduct = null;
-let trackingTimer = null;
+const selectedPixelsElement =
+  document.getElementById("selectedPixels");
+
+const totalPriceElement =
+  document.getElementById("totalPrice");
+
+const checkoutPixelsElement =
+  document.getElementById("checkoutPixels");
+
+const checkoutPriceElement =
+  document.getElementById("checkoutPrice");
+
+const reserveButton =
+  document.getElementById("reserveButton");
 
 
-function openOrder(id, name, price) {
-    selectedProduct = {
-        id,
-        name,
-        price
-    };
+let selectedPixels = new Set();
 
-    document.getElementById("selectedProduct").textContent =
-        `${name} - ${price} جنيه`;
 
-    document.getElementById("orderSection")
-        .classList.remove("hidden");
+// إنشاء الـ 10,000 بكسل
+for (let i = 0; i < TOTAL_PIXELS; i++) {
 
-    document.getElementById("orderSection")
-        .scrollIntoView({ behavior: "smooth" });
+  const pixel = document.createElement("div");
+
+  pixel.className = "pixel";
+
+  pixel.dataset.id = i;
+
+  pixel.addEventListener("click", () => {
+
+    // لو المربع متباع، ممنوع اختياره
+    if (pixel.classList.contains("sold")) {
+      return;
+    }
+
+    // لو محدد بالفعل
+    if (selectedPixels.has(i)) {
+
+      selectedPixels.delete(i);
+
+      pixel.classList.remove("selected");
+
+    } else {
+
+      selectedPixels.add(i);
+
+      pixel.classList.add("selected");
+
+    }
+
+    updatePrice();
+
+  });
+
+  pixelBoard.appendChild(pixel);
 }
 
 
-async function sendOrder() {
+// تحديث السعر والعدادات
+function updatePrice() {
 
-    if (!selectedProduct) {
-        alert("اختار منتج أولاً.");
-        return;
-    }
+  const count = selectedPixels.size;
 
-    const name =
-        document.getElementById("customerName").value.trim();
+  const price = count * PIXEL_PRICE;
 
-    const phone =
-        document.getElementById("customerPhone").value.trim();
+  selectedPixelsElement.textContent =
+    count.toLocaleString("en-US");
 
-    const address =
-        document.getElementById("customerAddress").value.trim();
+  totalPriceElement.textContent =
+    price.toLocaleString("en-US") + " جنيه";
 
-    const file =
-        document.getElementById("paymentProof").files[0];
+  checkoutPixelsElement.textContent =
+    count.toLocaleString("en-US") + " بكسل";
 
-    if (!name || !phone || !address) {
-        alert("اكتب كل بيانات العميل.");
-        return;
-    }
-
-    if (!file) {
-        alert("ارفع صورة إثبات الدفع.");
-        return;
-    }
-
-    if (!["image/jpeg","image/png","image/webp"].includes(file.type)) {
-        alert("الصورة يجب أن تكون JPG أو PNG أو WEBP.");
-        return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-        alert("الحد الأقصى للصورة 5 ميجابايت.");
-        return;
-    }
-
-    const button =
-        document.getElementById("sendOrderButton");
-
-    button.disabled = true;
-    button.textContent = "جاري إرسال الطلب...";
-
-    try {
-
-        const fileId = crypto.randomUUID();
-
-        const ext =
-            file.name.split(".").pop().toLowerCase();
-
-        const filePath =
-            `orders/${fileId}.${ext}`;
-
-
-        const { error: uploadError } =
-            await supabaseClient.storage
-                .from("payment-proofs")
-                .upload(filePath, file, {
-                    contentType: file.type,
-                    upsert: false
-                });
-
-        if (uploadError) {
-            throw uploadError;
-        }
-
-
-        const { data: orderNumber, error: orderError } =
-            await supabaseClient.rpc(
-                "create_order",
-                {
-                    p_product_id: selectedProduct.id,
-                    p_product_name: selectedProduct.name,
-                    p_product_price: selectedProduct.price,
-                    p_customer_name: name,
-                    p_customer_phone: phone,
-                    p_customer_address: address,
-                    p_payment_proof_url: filePath
-                }
-            );
-
-        if (orderError) {
-
-            await supabaseClient.storage
-                .from("payment-proofs")
-                .remove([filePath]);
-
-            throw orderError;
-        }
-
-
-        document.getElementById("newOrderNumber").textContent =
-            orderNumber;
-
-        document.getElementById("orderResult")
-            .classList.remove("hidden");
-
-
-        document.getElementById("trackingNumber").value =
-            orderNumber;
-
-
-        const message = `
-طلب جديد من متجر اختبار
-
-رقم الطلب:
-${orderNumber}
-
-المنتج:
-${selectedProduct.name}
-
-السعر:
-${selectedProduct.price} جنيه
-
-اسم العميل:
-${name}
-
-رقم الموبايل:
-${phone}
-
-العنوان:
-${address}
-
-الحالة:
-قيد المراجعة
-`;
-
-        window.open(
-            `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
-            "_blank"
-        );
-
-
-        document.getElementById("customerName").value = "";
-        document.getElementById("customerPhone").value = "";
-        document.getElementById("customerAddress").value = "";
-        document.getElementById("paymentProof").value = "";
-
-        trackOrder();
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(
-            "حصل خطأ:\n\n" +
-            (error.message || "خطأ غير معروف")
-        );
-
-    } finally {
-
-        button.disabled = false;
-        button.textContent = "إرسال الطلب";
-    }
+  checkoutPriceElement.textContent =
+    price.toLocaleString("en-US") + " جنيه";
 }
 
 
-async function trackOrder() {
+// زر الحجز
+reserveButton.addEventListener("click", () => {
 
-    const number =
-        document.getElementById("trackingNumber")
-            .value
-            .trim();
+  const count = selectedPixels.size;
 
-    const message =
-        document.getElementById("trackingMessage");
+  if (count === 0) {
 
-    const result =
-        document.getElementById("trackingResult");
+    alert("من فضلك اختر بكسل واحد على الأقل.");
 
-    if (!number) {
-        message.textContent = "اكتب رقم الطلب.";
-        result.innerHTML = "";
-        return;
-    }
+    return;
+  }
 
-    message.textContent = "جاري البحث...";
-    result.innerHTML = "";
+  const price = count * PIXEL_PRICE;
 
-    const { data, error } =
-        await supabaseClient.rpc(
-            "get_order_tracking",
-            {
-                p_order_number: number
-            }
-        );
+  alert(
+    "تم اختيار " +
+    count +
+    " بكسل\n" +
+    "الإجمالي: " +
+    price +
+    " جنيه\n\n" +
+    "سنضيف نموذج بيانات العميل والدفع في الخطوة القادمة."
+  );
 
-    if (error) {
-        console.error(error);
-        message.textContent =
-            "حصل خطأ أثناء البحث.";
-        return;
-    }
-
-    if (!data || !data.length) {
-        message.textContent =
-            "رقم الطلب غير موجود.";
-        return;
-    }
-
-    message.textContent = "";
-
-    const order = data[0];
-
-    const statuses = [
-        ["pending", "قيد المراجعة"],
-        ["confirmed", "تم تأكيد الطلب"],
-        ["preparing", "جاري تجهيز الطلب"],
-        ["shipped", "تم شحن الطلب"],
-        ["delivered", "تم تسليم الطلب"]
-    ];
-
-    const current =
-        statuses.findIndex(x => x[0] === order.status);
-
-    result.innerHTML = `
-        <div class="tracking-card">
-            <h3>${order.order_number}</h3>
-
-            <p>
-                <strong>المنتج:</strong>
-                ${order.product_name}
-            </p>
-
-            <p>
-                <strong>السعر:</strong>
-                ${order.product_price} جنيه
-            </p>
-
-            ${statuses.map((item, i) => `
-                <div class="step ${i <= current ? "active" : ""}">
-                    <i>${i <= current ? "✓" : ""}</i>
-                    <strong>${item[1]}</strong>
-                </div>
-            `).join("")}
-        </div>
-    `;
-}
-
-
-function refreshTracking() {
-    trackOrder();
-}
-
-
-function focusTracking() {
-    document.getElementById("trackingSection")
-        .scrollIntoView({ behavior: "smooth" });
-
-    document.getElementById("trackingNumber").focus();
-}
-
-
-function startAutoRefresh() {
-
-    clearInterval(trackingTimer);
-
-    trackingTimer = setInterval(() => {
-
-        const number =
-            document.getElementById("trackingNumber").value.trim();
-
-        if (number) {
-            trackOrder();
-        }
-
-    }, 15000);
-}
-
-startAutoRefresh();
+});
