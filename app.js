@@ -1,33 +1,7 @@
 const db=supabase.createClient('https://uklivylyenatdqbgmcxy.supabase.co','sb_publishable_ntlKWYQvMXlCs_obIEVIIA_-CfxOFTJ');const PRICE=10,TOTAL_PIXELS=22500,$=id=>document.getElementById(id),board=$('pixelBoard'),selected=new Set();let pixels=[],scale=1;
 const money=n=>n.toLocaleString('en-US')+' جنيه';
-async function load(){
-  let all=[],from=0;
-  while(from<TOTAL_PIXELS){
-    const to=Math.min(from+999,TOTAL_PIXELS-1);
-    const{data,error}=await db.from('pixels').select('*').order('pixel_number').range(from,to);
-    if(error){board.innerHTML='<p>حصل خطأ في تحميل اللوحة.</p>';return}
-    all=all.concat(data||[]);
-    if(!data||data.length<1000)break;
-    from+=1000;
-  }
-  pixels=all;render();totals()
-}
-function render(){
-  board.innerHTML='';
-  const byNumber=new Map(pixels.map(p=>[p.pixel_number,p]));
-  let sold=0;
-  for(let number=1;number<=TOTAL_PIXELS;number++){
-    const p=byNumber.get(number)||{pixel_number:number,sold:false};
-    const e=document.createElement('button');
-    e.type='button';
-    e.className='pixel '+(p.sold?'sold':'available')+(selected.has(p.pixel_number)?' selected':'');
-    if(p.sold){sold++;if(p.ad_image_path)e.classList.add('has-ad')}else e.title='بيكسل #'+p.pixel_number;
-    e.onclick=()=>{if(!p.sold){selected.has(p.pixel_number)?selected.delete(p.pixel_number):selected.add(p.pixel_number);render();totals()}};
-    e.oncontextmenu=ev=>{ev.preventDefault();showDetails(p)};
-    board.appendChild(e)
-  }
-  $('availableCount').textContent=(TOTAL_PIXELS-sold).toLocaleString('en-US')
-}
+async function load(){let all=[],from=0;while(from<TOTAL_PIXELS){const to=Math.min(from+999,TOTAL_PIXELS-1);const{data,error}=await db.from('pixels').select('*').order('pixel_number').range(from,to);if(error){board.innerHTML='<p>حصل خطأ في تحميل اللوحة.</p>';return}all=all.concat(data||[]);if(!data||data.length<1000)break;from+=1000}pixels=all;render();totals()}
+function render(){board.innerHTML='';const byNumber=new Map(pixels.map(p=>[p.pixel_number,p]));let sold=0;for(let number=1;number<=TOTAL_PIXELS;number++){const p=byNumber.get(number)||{pixel_number:number,sold:false};const e=document.createElement('button');e.type='button';e.className='pixel '+(p.sold?'sold':'available')+(selected.has(p.pixel_number)?' selected':'');if(p.sold){sold++;if(p.ad_image_path)e.classList.add('has-ad')}else e.title='بيكسل #'+p.pixel_number;e.onclick=()=>{if(!p.sold){selected.has(p.pixel_number)?selected.delete(p.pixel_number):selected.add(p.pixel_number);render();totals()}};e.oncontextmenu=ev=>{ev.preventDefault();showDetails(p)};board.appendChild(e)}$('availableCount').textContent=(TOTAL_PIXELS-sold).toLocaleString('en-US')}
 function totals(){$('selectedCount').textContent=selected.size;$('totalPrice').textContent=money(selected.size*PRICE);$('checkoutCount').textContent=selected.size;$('checkoutPrice').textContent=money(selected.size*PRICE)}
 function open(id){$(id).classList.add('show')}function close(id){$(id).classList.remove('show')}
 document.querySelectorAll('[data-close]').forEach(x=>x.onclick=()=>close(x.dataset.close));document.querySelectorAll('.modal').forEach(m=>m.onclick=e=>{if(e.target===m)close(m.id)});
@@ -41,4 +15,10 @@ $('supportButton').onclick=()=>open('supportModal');$('sendSupport').onclick=asy
 function showDetails(p){if(!p.sold){$('pixelDetails').innerHTML='<h2>بيكسل #'+p.pixel_number+'</h2><p>البيكسل ده متاح للشراء بسعر <b>10 جنيه</b>.</p><button class="primary" onclick="close(\'detailModal\');selected.add('+p.pixel_number+');render();totals()">اختار البيكسل</button>'}else{$('pixelDetails').innerHTML='<h2>'+esc(p.ad_name||'إعلان')+'</h2><p><b>بيكسل #'+p.pixel_number+'</b></p>'+(p.ad_image_path?'<img class="detail-image" src="'+imageUrl(p.ad_image_path)+'" alt="">':'')+'<p>'+esc(p.ad_text||'')+'</p>'+(p.ad_link?'<a class="ad-link" href="'+escAttr(p.ad_link)+'" target="_blank" rel="noopener">زيارة الإعلان</a>':'')+'<p class="sold-label">هذا المكان مباع</p>'}open('detailModal')}
 function imageUrl(path){return db.storage.from('ad-images').getPublicUrl(path).data.publicUrl}function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function escAttr(s){return esc(s)}
 $('zoomIn').onclick=()=>setZoom(scale+.25);$('zoomOut').onclick=()=>setZoom(Math.max(.5,scale-.25));$('zoomReset').onclick=()=>setZoom(1);function setZoom(v){scale=v;board.style.transform='scale('+scale+')';board.style.transformOrigin='top center';board.parentElement.style.minHeight=(1800*scale+40)+'px'}
+const sheet=$('checkoutSheet'),handle=$('checkoutHandle');let dragStartY=0,dragging=false,sheetStart=0;
+function setSheetCollapsed(collapsed){sheet.classList.toggle('collapsed',collapsed)}
+handle.addEventListener('pointerdown',e=>{dragging=true;dragStartY=e.clientY;sheetStart=sheet.classList.contains('collapsed')?1:0;handle.setPointerCapture(e.pointerId);sheet.style.transition='none'});
+handle.addEventListener('pointermove',e=>{if(!dragging)return;const dy=e.clientY-dragStartY;if(Math.abs(dy)<3)return;const height=sheet.offsetHeight;let progress=sheetStart+(dy/Math.max(height,1));progress=Math.max(0,Math.min(1,progress));sheet.style.transform='translate(-50%,calc('+progress+' * (100% - 70px)))'});
+handle.addEventListener('pointerup',e=>{if(!dragging)return;dragging=false;sheet.releasePointerCapture(e.pointerId);sheet.style.transition='transform .22s ease';const dy=e.clientY-dragStartY;setSheetCollapsed(sheetStart?dy> -40:dy>40)});
+handle.addEventListener('pointercancel',()=>{dragging=false;sheet.style.transition='transform .22s ease';setSheetCollapsed(sheetStart===1)});
 load();setInterval(load,15000);
